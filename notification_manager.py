@@ -12,6 +12,14 @@ class NotificationManager:
     }
 
     def __init__(self, email, password):
+        """
+        Initializes a NotificationManager object with the specified email and password.
+
+        Args:
+            email (str): The email address to use for sending the text message.
+            password (str): The password associated with the email address.
+
+        """
         self.email = email
         self.password = password
 

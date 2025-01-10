@@ -1,5 +1,6 @@
 # type: ignore
 import csv, pprint, datetime
+from task_manager import Task
 
 class ListManager:
     def __init__(self, csv_filename):
@@ -8,7 +9,7 @@ class ListManager:
         self.task_list = []
         for task in self.initial_task_list:
             # print(task)
-            new_task = self.update_due_date(task)
+            new_task = self.update_due_date_if_past_due(task)
             self.task_list.append(new_task)
 
     # Read task list from CSV file
@@ -45,110 +46,30 @@ class ListManager:
         with open(self.csv_file, 'w', newline='') as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=['task name', 'task freq', 'task due', 'day of week'])
             writer.writeheader()
-            writer.writerows(self.task_list)
+            writer.writerows(task.to_dict() if isinstance(task, Task) else task for task in self.task_list)
             print('Task list updated')
 
 
     def print_tasks(self):
+        #TODO: Something's not working here
+    """
+    Print the task list.
+
+    This function prints the current task list in a human-readable format using pretty-printing.
+    """
+
         pprint.pprint(self.task_list)
         # pprint.pprint([task.to_dict() for task in self.task_list])
 
 
-
-    def add_new_task(self):
+    def enumerate_tasks(self):
         """
-        Adds a new task to the task list by prompting the user for the task name, frequency, and due date.
+        Enumerate the tasks in the task list and return the task number and Task object of the selected task.
 
-        The user is asked to enter the task name, frequency in days, and due date in MM/DD/YYYY format. If the frequency is a
-        multiple of 7, the program asks the user to confirm that the day of the week is correct. If the user answers 'y', the
-        program adds the task to the list with the correct day of the week. If the user answers 'n', the program asks the user
-        to re-enter the due date and confirm the day of the week again. If the frequency is not a multiple of 7, the program
-        adds the task to the list with 'Varies' as the day of the week.
-
-        Args:
-            None
+        Asks the user to select a task from the task list and return the task number and the selected Task object.
 
         Returns:
-            None
-        """
-        
-        while True:
-            task_name = input('Enter new task name: ')
-            if any(char.isalpha() for char in task_name) and any(char.isalnum() for char in task_name):
-                break
-            else:
-                print("Please enter a string containing at least one letter.")
-        while True:
-            task_freq = input('Enter task frequency (days): ')
-            if task_freq.isdigit() and int(task_freq) > 0:
-                break
-            else:
-                print("Please enter a positive integer for the frequency.")
-        while True:
-            task_due = input(f'Enter due date for {task_name} (MM/DD/YYYY): ')
-            try:
-                task_due_date = datetime.datetime.strptime(task_due, '%m/%d/%Y').date()
-                break
-            except ValueError:
-                print("Invalid date format. Please enter the date in MM/DD/YYYY format.")
-
-        # Check if the frequency is a multiple of 7
-        if int(task_freq) % 7 == 0:
-            # Calculate the day of the week for the due date
-            task_due_date = datetime.datetime.strptime(task_due, '%m/%d/%Y').date()
-            day_of_week = task_due_date.strftime('%A')
-
-            # Confirm with the user that the day of the week is correct
-            while True:
-                confirm = input(f'{task_name} is due on {day_of_week}. Is this correct? (y/n): ').lower()
-                if confirm == 'y':
-                    break
-                elif confirm == 'n':
-                        print('Please try again.')
-                        break
-                else:
-                    print("Invalid input. Please enter 'y' for yes or 'n' for no.")
-            while confirm == 'n':
-                while True:
-                    task_due = input(f'Enter due date for {task_name} (MM/DD/YYYY): ')
-                    try:
-                        task_due_date = datetime.datetime.strptime(task_due, '%m/%d/%Y').date()
-                        break
-                    except ValueError:
-                        print("Invalid date format. Please enter the date in MM/DD/YYYY format.")
-                task_due_date = datetime.datetime.strptime(task_due, '%m/%d/%Y').date()
-                day_of_week = task_due_date.strftime('%A')
-                while True:
-                    confirm = input(f'{task_name} is due on {day_of_week}. Is this correct? (y/n): ').lower()
-                    if confirm == 'y':
-                        break
-                    elif confirm == 'n':
-                        print('Please try again.')
-                        break
-                    else:
-                        print('Invalid input. Please enter (y/n).')
-
-            # Add the task to the list
-            new_task = {'task name': task_name, 'task freq': task_freq, 'task due': task_due, 'day of week': day_of_week}
-            self.task_list.append(new_task)
-            print(f'{task_name} added to task list')
-        else:
-            # Add the task to the list
-            new_task = {'task name': task_name, 'task freq': task_freq, 'task due': task_due, 'day of week': 'Varies'}
-            self.task_list.append(new_task)
-            print(f'{task_name} added to task list')
-
-
-
-    def delete_task(self):
-        """
-        Asks the user to select a task from the task list and confirm deletion before removing it.
-
-        Args:
-            task_list (list): A list of tasks, where each task is a dict with keys "task name", "task freq", "task due", and "day of week".
-
-        Returns:
-            None
+            tuple: A tuple containing the task number and the selected Task object.
         """
 
         print('\nTask List:')
@@ -156,29 +77,117 @@ class ListManager:
             print(f'{i}. {task["task name"]}: Due {task["task due"]} every {task["task freq"]} days')
         while True:
             try:
-                task_num = int(input(f'\nEnter the task number to delete: '))
+                task_num = int(input(f'\nEnter the task number to edit/delete: '))
                 if 1 <= task_num <= len(self.task_list):
-                    selected_task = self.task_list[task_num - 1]
-                    while True:
-                        confirm = input(f'Are you sure you want to delete "{selected_task["task name"]}"? (y/n): ').lower()
-                        if confirm == 'y':
-                            del self.task_list[task_num - 1]
-                            print(f'Task {task_num} deleted.')
-                            break
-                        elif confirm == 'n':
-                            print('Task deletion canceled. Please try again.')
-                            break
-                        else:
-                            print("Invalid input. Please enter 'y' for yes or 'n' for no.")
-                    if confirm == 'y':
-                        break
+                    selected_task = Task(task_name=self.task_list[task_num - 1]['task name'], task_freq=self.task_list[task_num - 1]['task freq'], task_due=datetime.datetime.strptime(self.task_list[task_num - 1]['task due'], '%m/%d/%Y').date() if isinstance(self.task_list[task_num - 1]['task due'], str) else self.task_list[task_num - 1]['task due'], day_of_week=self.task_list[task_num - 1]['day of week'])
+                    break
                 else:
                     print(f'Invalid task number. Please enter a number between 1 and {len(self.task_list)}.')
             except ValueError:
                 print(f'Invalid input. Please enter a number between 1 and {len(self.task_list)}.')
+        return task_num, selected_task
+    
+
+    def add_new_task(self):
+        """
+        Add a new task to the task list.
+
+        Asks the user to select a task name, frequency, due date, and day of week.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+
+        task_name = Task()
+
+        # Add the task to the list
+        task_name.to_dict()
+        pprint.pprint(task_name.to_dict())
+        self.task_list.append(task_name)
+        print(f'{task_name} added to task list')
 
 
-    def update_due_date(self, task):
+    def delete_task(self, task_num=None):
+        """
+        Delete a task from the task list.
+
+        If task_num is None, asks the user to select a task from the task list and then deletes it.
+        If task_num is an integer, deletes the task at that index in the task list (1-indexed).
+
+        Args:
+            task_num (int or None): The number of the task to delete, or None to ask the user to select a task.
+
+        Returns:
+            None
+        """
+        if task_num is None:
+            task_num, selected_task = self.enumerate_tasks()
+            del self.task_list[task_num - 1]
+            print(f'Task {task_num}, {selected_task.task_name} deleted.')
+        else:
+            selected_task = self.task_list[task_num - 1]
+            del self.task_list[task_num - 1]
+            print(f'Task {task_num}, {selected_task.task_name} deleted.')
+
+
+    def update_list(self, task_num, selected_task):
+        """
+        Update the task list with the new task information.
+
+        Args:
+            task_num (int): The number of the task to update in the task list (1-indexed).
+            selected_task (Task): The updated Task object.
+
+        Returns:
+            None
+        """
+
+        self.delete_task(task_num)
+        self.task_list.append(selected_task)
+        self.write_task_list_to_csv()
+                # pprint.pprint(selected_task.from_dict(selected_task))    
+    
+    def edit_task(self):
+        """
+        Allows the user to edit a task in the task list.
+
+        Asks the user to select a task from the task list and then asks what they want to edit about the task: the task name, due date, frequency, or all of the above.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        task_num, selected_task = self.enumerate_tasks()
+
+        while True:
+            edit_what = input(f'Would you like to edit the task name, due date, frequency, or all of the above for {selected_task.task_name}? (n/d/f/a): ').lower()
+            if edit_what == 'n':
+                selected_task.task_name = selected_task.get_task_name()
+                self.update_list(task_num, selected_task)
+                break
+            elif edit_what == 'd':
+                selected_task.task_due = selected_task.get_task_due()
+                self.update_list(task_num, selected_task)
+                break
+            elif edit_what == 'f':
+                selected_task.task_freq = selected_task.get_task_freq()
+                self.update_list(task_num, selected_task)
+                break
+            elif edit_what == 'a':
+                selected_task.task_name = selected_task.get_task_name()
+                selected_task.task_due = selected_task.get_task_due()
+                selected_task.task_freq = selected_task.get_task_freq()
+                self.update_list(task_num, selected_task)
+                break
+            else:
+                print("Invalid input. Please enter 'n','d', 'f', or 'a'.")
+
+    def update_due_date_if_past_due(self, task):
         """
         Update the due date of a task based on its frequency.
 

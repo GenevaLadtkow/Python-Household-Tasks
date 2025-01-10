@@ -29,12 +29,17 @@ if __name__ == "__main__":
 
 
     # TODO: Make this repeatable for multiple additions or deletions. Only run this part if the user wants to.
-    action = input('Would you like to add or delete a new task? (add/delete/quit): ').lower()
+    action = input('Would you like to add or delete a new task? (add/delete/edit/quit): ').lower()
     if action == 'add':
         list_manager.add_new_task()
+        # list_manager.print_tasks() # TODO: Why isn't this printing the new task in the list?
         list_manager.write_task_list_to_csv()
     elif action == 'delete':
         list_manager.delete_task()
         list_manager.write_task_list_to_csv()
+    elif action == 'edit':
+        list_manager.edit_task()
+        # list_manager.print_tasks()
+        list_manager.write_task_list_to_csv()    
     elif action == 'quit':
         print('Goodbye!')
