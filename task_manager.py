@@ -39,16 +39,16 @@ class Task:
         self.day_of_week = day_of_week
 
     def get_task_name(self):
-    """
-    Prompt the user to enter a valid task name.
+        """
+        Prompt the user to enter a valid task name.
 
-    Continuously asks the user to input a task name that contains at least one
-    letter and one alphanumeric character. Provides feedback to the user if the
-    input is invalid. Returns the validated task name as a string.
+        Continuously asks the user to input a task name that contains at least one
+        letter and one alphanumeric character. Provides feedback to the user if the
+        input is invalid. Returns the validated task name as a string.
 
-    Returns:
-        str: The validated task name.
-    """
+        Returns:
+            str: The validated task name.
+        """
 
         while True:
             task_name = input('Enter new task name: ')
@@ -60,17 +60,17 @@ class Task:
    
     
     def get_task_due(self):
-    """
-    Prompt the user to enter a valid due date for the task.
+        """
+        Prompt the user to enter a valid due date for the task.
 
-    Continuously asks the user to input a due date in the format MM/DD/YYYY.
-    Ensures that the input date is valid and not in the past. If the date is 
-    valid and today or in the future, it returns the date as a datetime.date object. 
-    Provides feedback to the user if the input is invalid or the date is in the past.
+        Continuously asks the user to input a due date in the format MM/DD/YYYY.
+        Ensures that the input date is valid and not in the past. If the date is 
+        valid and today or in the future, it returns the date as a datetime.date object. 
+        Provides feedback to the user if the input is invalid or the date is in the past.
 
-    Returns:
-        datetime.date: The validated due date of the task.
-    """
+        Returns:
+            datetime.date: The validated due date of the task.
+        """
 
         while True:
             task_due = input(f'Enter due date for {self.task_name} (MM/DD/YYYY): ')
@@ -88,16 +88,16 @@ class Task:
 
 
     def get_task_freq(self):
-    """
-    Prompt the user to enter a valid task frequency in days.
+        """
+        Prompt the user to enter a valid task frequency in days.
 
-    Continuously asks the user to input a positive integer representing the number of days
-    between task occurrences. The function ensures the input is a positive integer and 
-    returns it as a string once validated.
+        Continuously asks the user to input a positive integer representing the number of days
+        between task occurrences. The function ensures the input is a positive integer and 
+        returns it as a string once validated.
 
-    Returns:
-        str: The task frequency in days as a string.
-    """
+        Returns:
+            str: The task frequency in days as a string.
+        """
 
         while True:
             task_freq = input('Enter task frequency (days): ')
@@ -109,17 +109,17 @@ class Task:
     
     
     def get_day_of_week(self):
-    """
-    Determine and confirm the day of the week for the task due date.
+        """
+        Determine and confirm the day of the week for the task due date.
 
-    If the task frequency is a multiple of 7, this function calculates the day of the week
-    for the task's due date and prompts the user to confirm its accuracy. If the user disagrees,
-    they are asked to re-enter the due date until the correct day of the week is confirmed.
-    If the task frequency is not a multiple of 7, the day of the week is set to 'Varies'.
+        If the task frequency is a multiple of 7, this function calculates the day of the week
+        for the task's due date and prompts the user to confirm its accuracy. If the user disagrees,
+        they are asked to re-enter the due date until the correct day of the week is confirmed.
+        If the task frequency is not a multiple of 7, the day of the week is set to 'Varies'.
 
-    Returns:
-        str: The confirmed day of the week or 'Varies' if the frequency is not a multiple of 7.
-    """
+        Returns:
+            str: The confirmed day of the week or 'Varies' if the frequency is not a multiple of 7.
+        """
 
         # Check if the frequency is a multiple of 7
         if int(self.task_freq) % 7 == 0:
@@ -175,16 +175,16 @@ class Task:
         }
 
     def from_dict(self, task_dict):
-    """
-    Update the task's attributes based on a dictionary representation.
+        """
+        Update the task's attributes based on a dictionary representation.
 
-    Extracts the task name, frequency, due date, and day of the week from
-    a provided dictionary and assigns these values to the task's attributes.
+        Extracts the task name, frequency, due date, and day of the week from
+        a provided dictionary and assigns these values to the task's attributes.
 
-    Args:
-        task_dict (dict): A dictionary containing task information with keys
-                          'task name', 'task freq', 'task due', and 'day of week'.
-    """
+        Args:
+            task_dict (dict): A dictionary containing task information with keys
+                            'task name', 'task freq', 'task due', and 'day of week'.
+        """
 
         self.task_name = task_dict['task name']
         self.task_freq = int(task_dict['task freq'])

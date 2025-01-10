@@ -11,6 +11,10 @@ class NotificationManager:
         'tmobile': '@tmomail.net'
     }
 
+    # MY_EMAIL = os.getenv('MY_EMAIL')
+    # MY_PASSWORD = os.getenv('MY_PASSWORD')
+    # MY_PHONE = os.getenv('MY_PHONE')
+
     def __init__(self, email, password):
         """
         Initializes a NotificationManager object with the specified email and password.
@@ -22,6 +26,7 @@ class NotificationManager:
         """
         self.email = email
         self.password = password
+        # self.phone = MY_PHONE
 
     def send_text_via_email(self, to_number, carrier, message):
         """
@@ -49,3 +54,22 @@ class NotificationManager:
             server.login(self.email, self.password)
             server.sendmail(self.email, to_address, msg.as_string())
             print('Text message sent')
+
+
+    def run_daily(self):
+        # TODO: Make this run once a day at 7am. Add to crontab? Make the user input part below not run at that time.
+        today = datetime.date.today().strftime('%m/%d/%Y')
+        print(today)
+        # Initialize the ListManager object which also updates any past due tasks.
+        list_manager = ListManager('task_list.csv')
+        list_manager.print_tasks()
+        list_manager.write_task_list_to_csv()
+
+        notification_manager = NotificationManager(MY_EMAIL, MY_PASSWORD)
+        # Send text messages for tasks due today
+        #TODO: Add this as class method in task manager
+        for task in list_manager.task_list:
+            if task['task due'] == today:
+                notification_manager.send_text_via_email(MY_PHONE,'verizon', task['task name'] + ' is due today')
+                print(task['task name'] + ' is due today')
+        notification_manager.send_text_via_email(MY_PHONE, 'verizon', 'Tasks have been updated.')

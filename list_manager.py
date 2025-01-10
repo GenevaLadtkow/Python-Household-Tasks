@@ -52,11 +52,11 @@ class ListManager:
 
     def print_tasks(self):
         #TODO: Something's not working here
-    """
-    Print the task list.
+        """
+        Print the task list.
 
-    This function prints the current task list in a human-readable format using pretty-printing.
-    """
+        This function prints the current task list in a human-readable format using pretty-printing.
+        """
 
         pprint.pprint(self.task_list)
         # pprint.pprint([task.to_dict() for task in self.task_list])
